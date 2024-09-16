@@ -1,4 +1,4 @@
-### Oi! Meu nome é Henrique Fernandes, esse é meu perfil :)
+### Oi! Esse é meu perfil :)
 
 <a href="https://github.com/8enrich/github-readme-stats">
   <img height=200 align="center" src="https://github-readme-stats.vercel.app/api?username=8enrich&theme=tokyonight" />
