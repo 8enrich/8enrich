@@ -77,3 +77,54 @@ vim.g.mkdp_combine_preview_auto_refresh = 1
 
 vim.keymap.set('t', '<C-n>', '<C-\\><C-n>', { noremap = true, silent = true })
 vim.keymap.set('t', '<C-w>', '<C-\\><C-n><C-w>', { noremap = true, silent = true })
+vim.opt.grepprg = "rg --vimgrep"
+
+function replace()
+
+  local old = vim.fn.input("Old string: ")
+
+  if old == "" then
+    print("Old string cannot be empty!")
+    return
+  end
+
+  local new = vim.fn.input("New string: ")
+
+  local folder_input = vim.fn.input("Folder: ")
+
+  local folder = '.'
+
+  if folder_input ~= "" then
+    folder = folder_input
+  end
+
+  vim.cmd('grep "' .. old .. '" ' .. folder)
+
+  vim.cmd('cfdo %s/' .. old .. '/' .. new .. '/g | update')
+
+  print("Replaced!")
+
+end
+
+vim.api.nvim_set_keymap('n', '<M-r>', ':lua replace()<CR>', { noremap = true, silent = true })
+
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+vim.opt.foldnestmax = 3
+
+vim.opt.spell = false
+
+vim.api.nvim_create_augroup("MarkdownSpellcheck", { clear = true })
+
+vim.api.nvim_create_autocmd({ "FileType" }, {
+  group = "MarkdownSpellcheck",
+  pattern = { "markdown", "markdown.*", "text", "gitcommit" },
+  callback = function()
+    vim.opt_local.spell = true
+    vim.opt_local.spelllang = "pt_br"
+  end,
+  desc = "Enable spellcheck for defined filetypes",
+})
