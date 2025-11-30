@@ -29,6 +29,64 @@ lvim.builtin.gitsigns.opts = {
 
 vim.wo.relativenumber = true
 
+-- Função para permitir calcular uma distância proporcional ao tamanho da janela
+local function proportional_pad(percent)
+  local win = vim.api.nvim_get_current_win()
+  local width = vim.api.nvim_win_get_width(win)
+
+  return math.floor(width * percent)
+end
+
+-- Opções do plugin render_markdown
+local render_markdown_opts = {
+  latex = { enabled = false },
+  win_options = { conceallevel = { rendered = 2 } },
+  on = {
+      render = function()
+          require('nabla').enable_virt({ autogen = false })
+      end,
+      clear = function()
+          require('nabla').disable_virt()
+      end,
+  },
+  code = {
+      width = 'block',
+      left_margin = 0.5,
+      left_pad = 0.2,
+      right_pad = 0.2,
+  },
+  heading = {
+      sign = false,
+      position = 'inline',
+      width = 'block',
+      left_margin = 0.5,
+      left_pad = 0.2,
+      right_pad = 0.2,
+  },
+  quote = { left_margin = 0.5 },
+  paragraph = { left_margin = 0.5 },
+  checkbox = { left_pad = proportional_pad(0.30) },
+  bullet = { left_pad = proportional_pad(0.30) },
+  pipe_table = { left_margin = 0.5 },
+}
+
+-- Função para atualizar o left_pad do render_markdown
+local function update_markdown_padding()
+  local overrides = {
+    bullet = { left_pad = proportional_pad(0.30) },
+    checkbox = { left_pad = proportional_pad(0.30) },
+  }
+
+  local merged = vim.tbl_deep_extend("force", render_markdown_opts, overrides)
+
+  require("render-markdown").setup(merged)
+end
+
+-- Chamando a função de atualização do left_pad sempre que a tela mudar de tamanho
+vim.api.nvim_create_autocmd("VimResized", {
+    callback = update_markdown_padding,
+})
+
 
 lvim.plugins = {
   -- Fazer preview de markdown
@@ -43,36 +101,9 @@ lvim.plugins = {
   },
   -- Renderizar markdown no próprio vim
   {
-    'MeanderingProgrammer/render-markdown.nvim',
+    '8enrich/render-markdown.nvim',
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
-    opts = {
-      latex = { enabled = false },
-      win_options = { conceallevel = { rendered = 2 } },
-      on = {
-          render = function()
-              require('nabla').enable_virt({ autogen = false })
-          end,
-          clear = function()
-              require('nabla').disable_virt()
-          end,
-      },
-      code = {
-          width = 'block',
-          left_margin = 0.5,
-          left_pad = 0.2,
-          right_pad = 0.2,
-      },
-      heading = {
-          sign = false,
-          position = 'inline',
-          width = 'block',
-          left_margin = 0.5,
-          left_pad = 0.2,
-          right_pad = 0.2,
-      },
-      paragraph = { left_margin = 0.5 },
-
-    },
+    opts = render_markdown_opts
   },
   -- Renderizar LaTeX nos arquivos markdown
   {
