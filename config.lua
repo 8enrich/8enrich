@@ -41,14 +41,6 @@ end
 local render_markdown_opts = {
   latex = { enabled = false },
   win_options = { conceallevel = { rendered = 2 } },
-  on = {
-      render = function()
-          require('nabla').enable_virt({ autogen = false })
-      end,
-      clear = function()
-          require('nabla').disable_virt()
-      end,
-  },
   code = {
       width = 'block',
       left_margin = 0.5,
@@ -62,6 +54,14 @@ local render_markdown_opts = {
       left_margin = 0.5,
       left_pad = 0.2,
       right_pad = 0.2,
+      backgrounds = {
+        "VisualNOS",
+        "DiagnosticVirtualTextWarn",
+        "DiagnosticVirtualTextHint",
+        "DiagnosticVirtualTextInfo",
+        "Visual",
+        "DiagnosticVirtualTextError",
+      },
   },
   quote = { left_margin = 0.5 },
   paragraph = { left_margin = 0.5 },
@@ -99,22 +99,13 @@ lvim.plugins = {
     end,
     ft = { "markdown" },
   },
-  -- Renderizar markdown no próprio vim
+  -- Renderizar markdown no próprio neovim
   {
     '8enrich/render-markdown.nvim',
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
     opts = render_markdown_opts
   },
-  -- Renderizar LaTeX nos arquivos markdown
-  {
-    "jbyuki/nabla.nvim",
-    lazy = true,
-    dependencies = {
-      "nvim-neo-tree/neo-tree.nvim",
-      "williamboman/mason.nvim",
-    },
-  },
-  -- Renderizar imagens no próprio vim
+  -- Renderizar imagens no próprio neovim
   {
     "3rd/image.nvim",
     build = false,
@@ -124,7 +115,7 @@ lvim.plugins = {
         integrations = {
           markdown = {
             enabled = true,
-            clear_in_insert_mode = false,
+            clear_in_insert_mode = true,
             download_remote_images = true,
             only_render_image_at_cursor = true,
             only_render_image_at_cursor_mode = "popup",
@@ -157,7 +148,14 @@ lvim.plugins = {
         tmux_show_only_in_active_window = false,
         hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" },
     }
-  }
+  },
+  -- Renderiza LaTeX no próprio neovim
+  {
+    'Thiago4532/mdmath.nvim',
+    dependencies = {
+        'nvim-treesitter/nvim-treesitter',
+    },
+},
 }
 
 -- Configurações do markdown preview
